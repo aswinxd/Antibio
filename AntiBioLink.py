@@ -56,11 +56,22 @@ async def check_user_bio(client, event, user_cache, cache_duration):
 
 async def handle_start_command(event):
     instructions = (
-        "Welcome! I am your bot. Here are some commands you can use:\n"
-        "/add - Add a user ID to the whitelist\n"
-        "/removeuser - Remove a user ID from the whitelist"
+        "Welcome! This is AntiBioLink. Here are some commands you can use:\n"
+        "/add <user_id> - Add a user ID to the whitelist\n"
+        "/removeuser <user_id> - Remove a user ID from the whitelist\n"
+        "/start - Show this help message\n"
+        "\n"
+        "Features:\n"
+        "1. Automatically checks new users' bios for links and kicks them if a link is found.\n"
+        "2. Caches user bio checks to avoid repetitive checks within an hour.\n"
+        "3. Handles messages in batches to optimize performance and reduce load.\n"
+        "4. Sends notifications to users when they are kicked due to having links in their bio.\n"
+        "<code>ADD TO YOUR GROUP AND PROMOTE AS ADMIN.<code>\n"
     )
-    await event.respond(instructions)
+    buttons = [
+        [Button.url("Support", "https://xenonsupportchat.t.me"), Button.url("Updates", "https://xenonbots.t.me")]
+    ]
+    await event.respond(instructions, buttons=buttons)
 
 async def worker(name, client, queue, user_cache, cache_duration):
     while True:
