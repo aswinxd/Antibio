@@ -67,7 +67,7 @@ async def handle_start_command(event):
         "2. Caches user bio checks to avoid repetitive checks within an hour.\n"
         "3. Handles messages in batches to optimize performance and reduce load.\n"
         "4. Sends notifications to users when they are kicked due to having links in their bio.\n"
-        "<code>ADD TO YOUR GROUP AND PROMOTE AS ADMIN.<code>\n"
+        "~**ADD TO YOUR GROUP AND PROMOTE AS ADMIN WITH BAN PERMISSION.**\n"
     )
     buttons = [
         [types.KeyboardButtonUrl("Support", "https://xenonsupportchat.t.me"), types.KeyboardButtonUrl("Updates", "https://xenonbots.t.me")]
