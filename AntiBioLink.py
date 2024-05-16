@@ -69,7 +69,7 @@ async def handle_start_command(event):
         "<code>ADD TO YOUR GROUP AND PROMOTE AS ADMIN.<code>\n"
     )
     buttons = [
-        [Button.url("Support", "https://xenonsupportchat.t.me"), Button.url("Updates", "https://xenonbots.t.me")]
+        [types.KeyboardButtonUrl("Support", "https://xenonsupportchat.t.me"), types.KeyboardButtonUrl("Updates", "https://xenonbots.t.me")]
     ]
     await event.respond(instructions, buttons=buttons)
 
