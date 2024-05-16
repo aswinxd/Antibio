@@ -2,6 +2,7 @@ import re
 import asyncio
 from collections import deque
 from telethon import TelegramClient, events, functions
+from telethon.tl import types
 from telethon.tl.types import PeerUser
 from db import add_chatid, check_userid, add_userid, remove_userid
 import logging
