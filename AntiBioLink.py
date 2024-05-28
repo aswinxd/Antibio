@@ -92,7 +92,7 @@ async def main():
 
     queue = asyncio.Queue()
     user_cache = {}  # Dictionary to store user check timestamps
-    cache_duration = 1000  # Cache duration in seconds (1 hour)
+    cache_duration = 250  # Cache duration in seconds (1 hour)
 
     async with TelegramClient('bot_session', api_id, api_hash) as client:
         await client.start(bot_token=bot_token)
