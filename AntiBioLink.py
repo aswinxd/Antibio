@@ -8,7 +8,7 @@ from db import add_chatid, check_userid, add_userid, remove_userid
 import logging
 import time
 
-# Set up logging
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ async def check_user_bio(client, event, user_cache, cache_duration):
     if user_id is None:
         return
 
-    # Check if the user has been checked recently
+    
     current_time = time.time()
     if user_id in user_cache:
         last_checked_time = user_cache[user_id]
@@ -47,7 +47,7 @@ async def check_user_bio(client, event, user_cache, cache_duration):
             except:
                 await client.send_message(chat_id, msg2)
 
-        # Update the cache with the current time
+        
         user_cache[user_id] = current_time
 
     except Exception as e:
@@ -69,7 +69,7 @@ async def handle_start_command(event):
 async def worker(name, client, queue, user_cache, cache_duration):
     while True:
         event_batch = []
-        for _ in range(100):  # Adjust batch size as needed
+        for _ in range(100):  
             event = await queue.get()
             event_batch.append(event)
             queue.task_done()
@@ -83,8 +83,8 @@ async def main():
     bot_token = '6415620700:AAEFMGPt3ntPt8Dai5Oa7U5TVvsJtk57HRI'
 
     queue = asyncio.Queue()
-    user_cache = {}  # Dictionary to store user check timestamps
-    cache_duration = 250  # Cache duration in seconds (1 hour)
+    user_cache = {} 
+    cache_duration = 250  
 
     async with TelegramClient('bot_session', api_id, api_hash) as client:
         await client.start(bot_token=bot_token)
@@ -97,8 +97,7 @@ async def main():
         async def handle_start(event):
             await handle_start_command(event)
 
-        # Create worker tasks to process the queue
-        num_workers = 100  # Adjust based on your needs
+        num_workers = 100
         tasks = []
         for i in range(num_workers):
             task = asyncio.create_task(worker(f'worker-{i}', client, queue, user_cache, cache_duration))
@@ -106,11 +105,7 @@ async def main():
 
         logger.info("Bot is running...")
         await client.run_until_disconnected()
-
-        # Wait until all tasks are done
         await queue.join()
-
-        # Cancel worker tasks
         for task in tasks:
             task.cancel()
         await asyncio.gather(*tasks, return_exceptions=True)
