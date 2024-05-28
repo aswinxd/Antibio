@@ -25,7 +25,6 @@ async def check_user_bio(client, event, user_cache, cache_duration):
     user_id = data.id
 
     if user_id is None:
-        logger.warning("User ID is None")
         return
 
     # Check if the user has been checked recently
@@ -33,7 +32,6 @@ async def check_user_bio(client, event, user_cache, cache_duration):
     if user_id in user_cache:
         last_checked_time = user_cache[user_id]
         if current_time - last_checked_time < cache_duration:
-            logger.info(f"Ignoring user {user_id} as their bio was checked recently.")
             return
 
     try:
@@ -53,21 +51,14 @@ async def check_user_bio(client, event, user_cache, cache_duration):
         user_cache[user_id] = current_time
 
     except Exception as e:
-        logger.error(f"Error fetching user data: {e}")
 
 async def handle_start_command(event):
     instructions = (
         "Welcome! This is AntiBioLink. Here are some commands you can use:\n"
-        "/add <user_id> - Add a user ID to the whitelist\n"
-        "/removeuser <user_id> - Remove a user ID from the whitelist\n"
-        "/start - Show this help message\n"
-        "\n"
         "Features:\n"
         "1. Automatically checks new users' bios for links and kicks them if a link is found.\n"
-        "2. Caches user bio checks to avoid repetitive checks within an hour.\n"
-        "3. Handles messages in batches to optimize performance and reduce load.\n"
         "4. Sends notifications to users when they are kicked due to having links in their bio.\n"
-        "~**ADD TO YOUR GROUP AND PROMOTE AS ADMIN WITH BAN PERMISSION.**\n"
+        "5. Add bot to your group as admin with ban permission\n"
     )
     buttons = [
         [types.KeyboardButtonUrl("Support", "https://xenonsupportchat.t.me"), types.KeyboardButtonUrl("Updates", "https://xenonbots.t.me")]
