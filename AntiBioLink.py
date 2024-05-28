@@ -51,7 +51,8 @@ async def check_user_bio(client, event, user_cache, cache_duration):
         user_cache[user_id] = current_time
 
     except Exception as e:
-
+        return
+        
 async def handle_start_command(event):
     instructions = (
         "Welcome! This is AntiBioLink. Here are some commands you can use:\n"
