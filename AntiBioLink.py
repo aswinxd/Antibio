@@ -5,12 +5,12 @@ from telethon import TelegramClient, events, functions
 from telethon.tl import types
 from telethon.tl.types import PeerUser
 from db import add_chatid, check_userid, add_userid, remove_userid
-import logging
+#import logging
 import time
 
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+#logging.basicConfig(level=logging.INFO)
+#logger = logging.getLogger(__name__)
 
 def check_string_regex(s):
     patterns_to_check = [r"@", r"https://", r"http://", r"t\.me//", r"t\.me"]
@@ -84,7 +84,7 @@ async def main():
 
     queue = asyncio.Queue()
     user_cache = {} 
-    cache_duration = 250  
+    cache_duration = 120  
 
     async with TelegramClient('bot_session', api_id, api_hash) as client:
         await client.start(bot_token=bot_token)
@@ -103,7 +103,6 @@ async def main():
             task = asyncio.create_task(worker(f'worker-{i}', client, queue, user_cache, cache_duration))
             tasks.append(task)
 
-        logger.info("Bot is running...")
         await client.run_until_disconnected()
         await queue.join()
         for task in tasks:
