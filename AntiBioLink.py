@@ -84,7 +84,7 @@ async def main():
 
     queue = asyncio.Queue()
     user_cache = {} 
-    cache_duration = 120  
+    cache_duration = 500 
 
     async with TelegramClient('bot_session', api_id, api_hash) as client:
         await client.start(bot_token=bot_token)
@@ -97,7 +97,7 @@ async def main():
         async def handle_start(event):
             await handle_start_command(event)
 
-        num_workers = 100
+        num_workers = 700
         tasks = []
         for i in range(num_workers):
             task = asyncio.create_task(worker(f'worker-{i}', client, queue, user_cache, cache_duration))
