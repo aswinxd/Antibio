@@ -72,7 +72,7 @@ async def handle_start_command(event):
         "• Add bot to your group as admin with ban permission\n"
     )
     buttons = [
-        [Button.url("Privacy policy", b"privacy_policy")],
+        [Button.inline("Privacy policy", b"privacy_policy")],
         [Button.url("Updates", "https://t.me/Codecbots")]
     ]
     await event.respond(instructions, buttons=buttons)
