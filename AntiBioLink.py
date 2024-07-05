@@ -62,7 +62,7 @@ async def handle_start_command(event):
         "5. Add bot to your group as admin with ban permission\n"
     )
     buttons = [
-        [types.KeyboardButtonUrl("Support", "https://xenonsupportchat.t.me"), types.KeyboardButtonUrl("Updates", "https://xenonbots.t.me")]
+        [types.KeyboardButtonUrl("Support", "https://CodecArchive.t.me"), types.KeyboardButtonUrl("Updates", "https://Codecbots.t.me")]
     ]
     await event.respond(instructions, buttons=buttons)
 
