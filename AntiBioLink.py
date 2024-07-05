@@ -55,11 +55,11 @@ async def check_user_bio(client, event, user_cache, cache_duration):
         
 async def handle_start_command(event):
     instructions = (
-        "Welcome! This is AntiBioLink. Here are some commands you can use:\n"
-        "Features:\n"
-        "1. Automatically checks new users' bios for links and kicks them if a link is found.\n"
-        "4. Sends notifications to users when they are kicked due to having links in their bio.\n"
-        "5. Add bot to your group as admin with ban permission\n"
+        "Welcome! This is AntiBioLink.\n"
+        "• Automatically checks new users' bios for links and kicks them if a link is found.\n"
+        "• Sends notifications to users when they are kicked due to having links in their bio.\n"
+        "• Use the /privacy command to view the privacy policy, and interact with your data.\n"
+        "• Add bot to your group as admin with ban permission\n"
     )
     buttons = [
         [types.KeyboardButtonUrl("Support", "https://CodecArchive.t.me"), types.KeyboardButtonUrl("Updates", "https://Codecbots.t.me")]
