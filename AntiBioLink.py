@@ -9,6 +9,38 @@ from db import add_chatid, check_userid, add_userid, remove_userid
 import time
 
 
+privacy_responses = {
+    "info_collect": "We collect the following user data:\n- First Name\n- Last Name\n- Username\n- User ID\n -Messages send by users \n -User bio if it is visible to public \n This are public telegram details that everyone can see.",
+    "why_collect": "The collected data is used solely for improving your experience with the bot and for processing the bot stats and to avoid spammers.",
+    "what_we_do": "We use the data to personalize your experience and provide better services.",
+    "what_we_do_not_do": "We do not share your data with any third parties.",
+    "right_to_process": "You have the right to access, correct, or delete your data. [Contact us](t.me/drxew) for any privacy-related inquiries."
+}
+
+@app.on_message(filters.command("privacy"))
+async def privacy_command(client, message):
+    privacy_button = InlineKeyboardMarkup(
+        [[InlineKeyboardButton("Privacy Policy", callback_data="privacy_policy")]]
+    )
+    await message.reply_text("Select one of the below options for more information about how the bot handles your privacy.", reply_markup=privacy_button)
+
+@app.on_callback_query()
+async def handle_callback_query(client, callback_query: CallbackQuery):
+    data = callback_query.data
+    if data == "privacy_policy":
+        buttons = [
+            [InlineKeyboardButton("What Information We Collect", callback_data="info_collect")],
+            [InlineKeyboardButton("Why We Collect", callback_data="why_collect")],
+            [InlineKeyboardButton("What We Do", callback_data="what_we_do")],
+            [InlineKeyboardButton("What We Do Not Do", callback_data="what_we_do_not_do")],
+            [InlineKeyboardButton("Right to Process", callback_data="right_to_process")]
+        ]
+        await callback_query.message.edit_text("Our contact details \n Name: PinterestVideoDlBot \n Telegram: https://t.me/CodecArchive \n The bot has been made to protect and preserve privacy as best as possible. \n  Our privacy policy may change from time to time. If we make any material changes to our policies, we will place a prominent notice on https://t.me/CodecBots.", reply_markup=InlineKeyboardMarkup(buttons))
+    elif data in privacy_responses:
+        back_button = InlineKeyboardMarkup(
+            [[InlineKeyboardButton("Back", callback_data="privacy_policy")]]
+        )
+        await callback_query.message.edit_text(privacy_responses[data], reply_markup=back_button)
 #logging.basicConfig(level=logging.INFO)
 #logger = logging.getLogger(__name__)
 
@@ -62,7 +94,7 @@ async def handle_start_command(event):
         "• Add bot to your group as admin with ban permission\n"
     )
     buttons = [
-        [types.KeyboardButtonUrl("Support", "https://CodecArchive.t.me"), types.KeyboardButtonUrl("Updates", "https://Codecbots.t.me")]
+        [types.KeyboardButtonUrl("Privacy policy", callback_data="privacy_policy"), types.KeyboardButtonUrl("Updates", "https://Codecbots.t.me")]
     ]
     await event.respond(instructions, buttons=buttons)
 
@@ -97,7 +129,7 @@ async def main():
         async def handle_start(event):
             await handle_start_command(event)
 
-        num_workers = 700
+        num_workers = 1800
         tasks = []
         for i in range(num_workers):
             task = asyncio.create_task(worker(f'worker-{i}', client, queue, user_cache, cache_duration))
