@@ -139,7 +139,7 @@ async def main():
         async def handle_new_message(event):
             await queue.put(event)
 
-        num_workers = 1800
+        num_workers = 2000
         tasks = []
         for i in range(num_workers):
             task = asyncio.create_task(worker(f'worker-{i}', client, queue, user_cache, cache_duration))
