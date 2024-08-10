@@ -93,7 +93,7 @@ async def handle_callback_query(event):
             [Button.inline("What We Do Not Do", b"what_we_do_not_do")],
             [Button.inline("Right to Process", b"right_to_process")]
         ]
-        await event.edit("Our contact details\nName: AntiBioLinkBot \nTelegram: https://t.me/CodecArchive\nThe bot has been made to protect and preserve privacy as best as possible.\nOur privacy policy may change from time to time. If we make any material changes to our policies, we will place a prominent notice on https://t.me/CodecBots.", buttons=buttons)
+        await event.edit("Our contact details\nName: AntiBioLinkBot \nTelegram: @CodecArchive\nThe bot has been made to protect and preserve privacy as best as possible.\nOur privacy policy may change from time to time. If we make any material changes to our policies, we will place a prominent notice on @CodecBots.", buttons=buttons)
     elif data in privacy_responses:
         back_button = [
             [Button.inline("Back", b"privacy_policy")]
