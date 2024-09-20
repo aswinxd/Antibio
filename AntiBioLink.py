@@ -1,5 +1,6 @@
 import re
 import asyncio
+import logging  # Import the logging module
 from collections import deque
 from telethon import TelegramClient, events, functions
 from telethon.tl import types
@@ -8,6 +9,14 @@ from telethon.errors import MessageDeleteForbiddenError, UserAdminInvalidError
 from telethon.tl.custom import Button
 from db import add_chatid, check_userid, add_userid, remove_userid
 import time
+
+# Set up logging
+logging.basicConfig(
+    filename="bot_errors.log",  # Log to a file
+    level=logging.INFO,  # Set log level to INFO
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 
 privacy_responses = {
     "info_collect": "We collect the following user data:\n- First Name\n- Last Name\n- Username\n- User ID\n- Messages sent by users\n- User bio if it is visible to the public\n These are public Telegram details that everyone can see.",
@@ -30,6 +39,7 @@ async def check_user_bio(client, event, user_cache, cache_duration):
     user_id = data.id
 
     if user_id is None:
+        logger.warning(f"User ID is None for event: {event.id}")
         return
 
     current_time = time.time()
@@ -44,61 +54,72 @@ async def check_user_bio(client, event, user_cache, cache_duration):
         if check_string_regex(user_bio):
             try:
                 await client.delete_messages(chat_id, [event.id])
-            except MessageDeleteForbiddenError:
-                pass
+            except MessageDeleteForbiddenError as e:
+                logger.error(f"Failed to delete message {event.id}: {str(e)}")
             try:
                 await client.kick_participant(chat_id, user_id)
-            except UserAdminInvalidError:
+            except UserAdminInvalidError as e:
+                logger.error(f"Failed to kick user {user_id}: {str(e)}")
                 return
 
             msg1 = f"You are kicked out from the group because your bio has a link"
             msg2 = f"User {user_id} was kicked out from the group because their bio had a link"
             try:
                 await client.send_message(PeerUser(user_id), msg1)
-            except:
+            except Exception as e:
+                logger.error(f"Failed to send message to user {user_id}: {str(e)}")
                 await client.send_message(chat_id, msg2)
 
         user_cache[user_id] = current_time
 
     except Exception as e:
-        return
+        logger.error(f"Error checking user bio for {user_id}: {str(e)}")
 
 async def handle_start_command(event):
-    instructions = (
-        "Welcome! This is AntiBioLink.\n"
-        "• Automatically checks new users' bios for links and kicks them if a link is found.\n"
-        "• Sends notifications to users when they are kicked due to having links in their bio.\n"
-        "• Use the /privacy command to view the privacy policy, and interact with your data.\n"
-        "• Add bot to your group as admin with ban permission\n"
-    )
-    buttons = [
-        [Button.inline("Privacy policy", b"privacy_policy")],
-        [Button.url("Updates", "https://t.me/Codecbots")]
-    ]
-    await event.respond(instructions, buttons=buttons)
+    try:
+        instructions = (
+            "Welcome! This is AntiBioLink.\n"
+            "• Automatically checks new users' bios for links and kicks them if a link is found.\n"
+            "• Sends notifications to users when they are kicked due to having links in their bio.\n"
+            "• Use the /privacy command to view the privacy policy, and interact with your data.\n"
+            "• Add bot to your group as admin with ban permission\n"
+        )
+        buttons = [
+            [Button.inline("Privacy policy", b"privacy_policy")],
+            [Button.url("Updates", "https://t.me/Codecbots")]
+        ]
+        await event.respond(instructions, buttons=buttons)
+    except Exception as e:
+        logger.error(f"Error handling /start command: {str(e)}")
 
 async def privacy_command(event):
-    privacy_button = [
-        [Button.inline("Privacy Policy", b"privacy_policy")]
-    ]
-    await event.respond("Select one of the below options for more information about how the bot handles your privacy.", buttons=privacy_button)
+    try:
+        privacy_button = [
+            [Button.inline("Privacy Policy", b"privacy_policy")]
+        ]
+        await event.respond("Select one of the below options for more information about how the bot handles your privacy.", buttons=privacy_button)
+    except Exception as e:
+        logger.error(f"Error handling /privacy command: {str(e)}")
 
 async def handle_callback_query(event):
-    data = event.data.decode("utf-8")
-    if data == "privacy_policy":
-        buttons = [
-            [Button.inline("What Information We Collect", b"info_collect")],
-            [Button.inline("Why We Collect", b"why_collect")],
-            [Button.inline("What We Do", b"what_we_do")],
-            [Button.inline("What We Do Not Do", b"what_we_do_not_do")],
-            [Button.inline("Right to Process", b"right_to_process")]
-        ]
-        await event.edit("Our contact details\nName: AntiBioLinkBot \nTelegram: @CodecArchive\nThe bot has been made to protect and preserve privacy as best as possible.\nOur privacy policy may change from time to time. If we make any material changes to our policies, we will place a prominent notice on @CodecBots.", buttons=buttons)
-    elif data in privacy_responses:
-        back_button = [
-            [Button.inline("Back", b"privacy_policy")]
-        ]
-        await event.edit(privacy_responses[data], buttons=back_button)
+    try:
+        data = event.data.decode("utf-8")
+        if data == "privacy_policy":
+            buttons = [
+                [Button.inline("What Information We Collect", b"info_collect")],
+                [Button.inline("Why We Collect", b"why_collect")],
+                [Button.inline("What We Do", b"what_we_do")],
+                [Button.inline("What We Do Not Do", b"what_we_do_not_do")],
+                [Button.inline("Right to Process", b"right_to_process")]
+            ]
+            await event.edit("Our contact details\nName: AntiBioLinkBot \nTelegram: @CodecArchive\nThe bot has been made to protect and preserve privacy as best as possible.\nOur privacy policy may change from time to time. If we make any material changes to our policies, we will place a prominent notice on @CodecBots.", buttons=buttons)
+        elif data in privacy_responses:
+            back_button = [
+                [Button.inline("Back", b"privacy_policy")]
+            ]
+            await event.edit(privacy_responses[data], buttons=back_button)
+    except Exception as e:
+        logger.error(f"Error handling callback query: {str(e)}")
 
 async def worker(name, client, queue, user_cache, cache_duration):
     while True:
@@ -152,4 +173,7 @@ async def main():
         await asyncio.gather(*tasks, return_exceptions=True)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except Exception as e:
+        logger.critical(f"Critical error in bot execution: {str(e)}")
