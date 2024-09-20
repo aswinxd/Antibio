@@ -36,6 +36,11 @@ def check_string_regex(s):
 async def check_user_bio(client, event, user_cache, cache_duration):
     chat_id = event.chat_id
     data = await event.get_sender()
+
+    if data is None:
+        logger.error(f"Failed to get sender data for event: {event.id}")
+        return
+
     user_id = data.id
 
     if user_id is None:
@@ -74,7 +79,6 @@ async def check_user_bio(client, event, user_cache, cache_duration):
 
     except Exception as e:
         logger.error(f"Error checking user bio for {user_id}: {str(e)}")
-
 async def handle_start_command(event):
     try:
         instructions = (
